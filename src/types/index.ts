@@ -1,12 +1,12 @@
-export interface   CalendarEvent { // pojedyncze wydarzenie
+export interface   CalendarEvent { 
     dateStart: number; 
     dateEnd: number; 
     title: string;
   }
   
-  export type CalendarData = CalendarEvent[]; // lista wydarzeń
+  export type CalendarData = CalendarEvent[]; 
   
-  export interface WeekDate { // pojedynczy dzień tygodnia
+  export interface WeekDate { 
     day: number;
     month: number;
     year: number;
