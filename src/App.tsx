@@ -1,5 +1,5 @@
 import React from 'react'
-import Schedule from './components/Schedule/schedule'
+import Schedule from './components/Schedule/Schedule'
 
 const App: React.FC = () => {
   return (

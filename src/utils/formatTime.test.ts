@@ -1,4 +1,4 @@
-import { formatTime } from "./utils";
+import { formatTime } from "./formatTime";
 
 describe("formatTime", () => {
   const getLocalTimeString = (timestamp: number): string => {
@@ -25,4 +25,3 @@ describe("formatTime", () => {
     expect(formatTime(18000)).toBe(getLocalTimeString(18000));
   });
 });
-
