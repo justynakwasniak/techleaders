@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { CalendarEvent, WeekDate } from ".";
 import { formatTime } from "../../utils/formatTime";
+import { calculateEventPosition } from "../../utils/calculateEventPosition";
+import { roundToNearestHalfHour } from "../../utils/roundToNearestHalfHour";
 
 const calendarData: CalendarEvent[] = [
   { dateStart: 1740985200, dateEnd: 1740996000, title: "Meeting 1" },
@@ -8,43 +10,6 @@ const calendarData: CalendarEvent[] = [
   { dateStart: 1741348800, dateEnd: 1741356000, title: "Meeting 3" },
   { dateStart: 1741539600, dateEnd: 1741550400, title: "Meeting 4" },
 ];
-
-const HOUR_HEIGHT = 48;
-const HEADER_HEIGHT = 40;
-const DAY_START_HOUR = 8;
-
-const roundToNearestHalfHour = (date: Date) => { 
-  const minutes = date.getMinutes(); 
-  if (minutes < 30) { 
-    date.setMinutes(0, 0, 0);
-  } else {
-    date.setMinutes(30, 0, 0); 
-  }
-  return date;
-};
-
-const calculateEventPosition = (dateStart: number, dateEnd: number) => {
-  const eventStartDate = new Date(dateStart * 1000);
-  const eventStartHour = eventStartDate.getHours();
-  const eventStartMinutes = eventStartDate.getMinutes();
-
-  const eventEndDate = new Date(dateEnd * 1000);
-  const eventEndHour = eventEndDate.getHours();
-  const eventEndMinutes = eventEndDate.getMinutes();
-
-  const eventDurationInHours =
-    eventEndHour - eventStartHour + (eventEndMinutes - eventStartMinutes) / 60;
-  const eventHeight = eventDurationInHours * HOUR_HEIGHT;
-
-  const topOffsetInHours =
-    eventStartHour - DAY_START_HOUR + eventStartMinutes / 60;
-  const topOffset = topOffsetInHours * HOUR_HEIGHT;
-
-  return {
-    top: HEADER_HEIGHT + topOffset,
-    height: eventHeight,
-  };
-};
 
 const Schedule = () => {
   const [startDate, setStartDate] = useState(new Date(2025, 2, 3)); 
@@ -73,7 +38,7 @@ const Schedule = () => {
   };
 
   const handleHourClick = (date: WeekDate, hour: number) => { 
-    const clickedDate = new Date(date.year, date.month - 1, date.day, hour); 
+    const clickedDate = new Date(date.year, date.month - 1, date.day, hour);
     const roundedDate = roundToNearestHalfHour(clickedDate);  
     const newEvent: CalendarEvent = {
       dateStart: Math.floor(roundedDate.getTime() / 1000),
