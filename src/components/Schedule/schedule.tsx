@@ -3,6 +3,7 @@ import { CalendarEvent, WeekDate } from ".";
 import { formatTime } from "../../utils/formatTime";
 import { calculateEventPosition } from "../../utils/calculateEventPosition";
 import { roundToNearestHalfHour } from "../../utils/roundToNearestHalfHour";
+import { format, addDays, fromUnixTime } from "date-fns";
 
 const calendarData: CalendarEvent[] = [
   { dateStart: 1740985200, dateEnd: 1740996000, title: "Meeting 1" },
@@ -12,69 +13,59 @@ const calendarData: CalendarEvent[] = [
 ];
 
 const Schedule = () => {
-  const [startDate, setStartDate] = useState(new Date(2025, 2, 3)); 
+  const [startDate, setStartDate] = useState(new Date(2025, 2, 3));
   const [events, setEvents] = useState<CalendarEvent[]>(calendarData);
- 
-  const generateWeekDates = (start: Date) => { 
+
+  const generateWeekDates = (start: Date) => {
     return Array.from({ length: 7 }, (_, i) => {
-      const date = new Date(start);
-      date.setDate(start.getDate() + i);
+      const date = addDays(start, i);
       return {
-        day: date.getDate(),
-        month: date.getMonth() + 1,
-        year: date.getFullYear(),
+        date,
       };
     });
   };
 
-  const weekDates = generateWeekDates(startDate); 
+  const weekDates = generateWeekDates(startDate);
 
-  const changeWeek = (days: number) => { 
-    setStartDate((prev) => {
-      const newDate = new Date(prev); 
-      newDate.setDate(prev.getDate() + days);
-      return newDate;
-    });
+  const changeWeek = (days: number) => {
+    setStartDate((prev) => addDays(prev, days));
   };
 
-  const handleHourClick = (date: WeekDate, hour: number) => { 
-    const clickedDate = new Date(date.year, date.month - 1, date.day, hour);
-    const roundedDate = roundToNearestHalfHour(clickedDate);  
+  const handleHourClick = (date: Date, hour: number) => {
+    const clickedDate = new Date(date);
+    clickedDate.setHours(hour, 0, 0, 0);
+    const roundedDate = roundToNearestHalfHour(clickedDate);
+
     const newEvent: CalendarEvent = {
       dateStart: Math.floor(roundedDate.getTime() / 1000),
       dateEnd: Math.floor(roundedDate.getTime() / 1000) + 3600,
       title: `New Event`,
     };
+
     setEvents((prev) => [...prev, newEvent]);
   };
-
 
   return (
     <div className="flex justify-center items-center p-4">
       <div className="flex flex-col items-center w-full">
         <div className="flex justify-between items-center mb-4">
-          <button onClick={() => changeWeek(-7)} className="p-2 ">⬅</button>
-          <h2 className="text-lg font-bold">{`${weekDates[0].day}/${weekDates[0].month} - ${weekDates[6].day}/${weekDates[6].month}`}</h2>
+          <button onClick={() => changeWeek(-7)} className="p-2">⬅</button>
+          <h2 className="text-lg font-bold">
+            {format(weekDates[0].date, "dd/MM")} - {format(weekDates[6].date, "dd/MM")}
+          </h2>
           <button onClick={() => changeWeek(7)} className="p-2">➡</button>
         </div>
         <div className="flex gap-4 p-4 overflow-x-auto">
-          {weekDates.map((date) => {
+          {weekDates.map(({ date }) => {
             const dayEvents = events.filter((event) => {
-              const eventDate = new Date(event.dateStart * 1000);
-              return (
-                eventDate.getDate() === date.day &&
-                eventDate.getMonth() + 1 === date.month &&
-                eventDate.getFullYear() === date.year
-              );
+              const eventDate = fromUnixTime(event.dateStart);
+              return format(eventDate, "yyyy-MM-dd") === format(date, "yyyy-MM-dd");
             });
 
             return (
-              <div
-                key={date.day}
-                className="w-32 bg-gray-100 relative pt-[40px]"
-              >
+              <div key={format(date, "yyyy-MM-dd")} className="w-32 bg-gray-100 relative pt-[40px]">
                 <h3 className="text-center font-bold absolute top-0 left-0 w-full p-2">
-                  {`${date.day}/${date.month}/${date.year}`}
+                  {format(date, "dd/MM/yyyy")}
                 </h3>
                 <div className="relative">
                   {Array.from({ length: 13 }, (_, i) => i + 8).map((hour) => (
