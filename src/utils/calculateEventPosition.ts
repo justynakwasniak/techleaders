@@ -24,3 +24,4 @@ export const calculateEventPosition = (dateStart: number, dateEnd: number) => {
       height: eventHeight,
     };
   };
+
