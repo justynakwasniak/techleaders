@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { CalendarEvent, WeekDate } from ".";
-import { formatTime } from "../../utils/formatTime";
-import { calculateEventPosition } from "../../utils/calculateEventPosition";
+import { addDays, format } from "date-fns";
+import { CalendarEvent } from ".";
+import ScheduleHeader from "./ScheduleHeader";
+import ScheduleDay from "./ScheduleDay";
 import { roundToNearestHalfHour } from "../../utils/roundToNearestHalfHour";
-import { format, addDays, fromUnixTime } from "date-fns";
 
 const calendarData: CalendarEvent[] = [
   { dateStart: 1740985200, dateEnd: 1740996000, title: "Meeting 1" },
@@ -19,9 +19,7 @@ const Schedule = () => {
   const generateWeekDates = (start: Date) => {
     return Array.from({ length: 7 }, (_, i) => {
       const date = addDays(start, i);
-      return {
-        date,
-      };
+      return { date };
     });
   };
 
@@ -48,52 +46,16 @@ const Schedule = () => {
   return (
     <div className="flex justify-center items-center p-4">
       <div className="flex flex-col items-center w-full">
-        <div className="flex justify-between items-center mb-4">
-          <button onClick={() => changeWeek(-7)} className="p-2">⬅</button>
-          <h2 className="text-lg font-bold">
-            {format(weekDates[0].date, "dd/MM")} - {format(weekDates[6].date, "dd/MM")}
-          </h2>
-          <button onClick={() => changeWeek(7)} className="p-2">➡</button>
-        </div>
+        <ScheduleHeader startDate={startDate} changeWeek={changeWeek} />
         <div className="flex gap-4 p-4 overflow-x-auto">
-          {weekDates.map(({ date }) => {
-            const dayEvents = events.filter((event) => {
-              const eventDate = fromUnixTime(event.dateStart);
-              return format(eventDate, "yyyy-MM-dd") === format(date, "yyyy-MM-dd");
-            });
-
-            return (
-              <div key={format(date, "yyyy-MM-dd")} className="w-32 bg-gray-100 relative pt-[40px]">
-                <h3 className="text-center font-bold absolute top-0 left-0 w-full p-2">
-                  {format(date, "dd/MM/yyyy")}
-                </h3>
-                <div className="relative">
-                  {Array.from({ length: 13 }, (_, i) => i + 8).map((hour) => (
-                    <div
-                      key={hour}
-                      className="h-12 border-t border-gray-300 text-sm text-center cursor-pointer"
-                      onClick={() => handleHourClick(date, hour)}
-                    >
-                      {hour}:00
-                    </div>
-                  ))}
-                </div>
-                {dayEvents.map((event) => {
-                  const { top, height } = calculateEventPosition(event.dateStart, event.dateEnd);
-                  return (
-                    <div
-                      key={event.title}
-                      className="absolute left-0 right-0 bg-blue-500 text-white text-center text-xs p-1 overflow-hidden cursor-pointer hover:bg-blue-700"
-                      style={{ top: `${top}px`, height: `${height}px` }}
-                    >
-                      {event.title} <br />
-                      {formatTime(event.dateStart)} - {formatTime(event.dateEnd)}
-                    </div>
-                  );
-                })}
-              </div>
-            );
-          })}
+          {weekDates.map(({ date }) => (
+            <ScheduleDay
+              key={format(date, "yyyy-MM-dd")}
+              date={date}
+              events={events}
+              handleHourClick={handleHourClick}
+            />
+          ))}
         </div>
       </div>
     </div>
