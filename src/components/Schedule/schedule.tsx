@@ -3,23 +3,22 @@ import { addDays, format } from "date-fns";
 import { CalendarEvent } from ".";
 import ScheduleHeader from "./ScheduleHeader";
 import ScheduleDay from "./ScheduleDay";
-import { roundToNearestHalfHour } from "../../utils/roundToNearestHalfHour";
 
-const calendarData: CalendarEvent[] = [
-  { dateStart: 1740985200, dateEnd: 1740996000, title: "Meeting 1" },
-  { dateStart: 1741082400, dateEnd: 1741086000, title: "Meeting 2" },
-  { dateStart: 1741348800, dateEnd: 1741356000, title: "Meeting 3" },
-  { dateStart: 1741539600, dateEnd: 1741550400, title: "Meeting 4" },
-];
 
-const Schedule = () => {
+type ScheduleProps = {
+  events: CalendarEvent[];
+  onEventClick: (event: CalendarEvent) => void;
+  onEmptyDateClick: (date: Date) => void;
+};
+
+
+
+const Schedule = ({ events, onEventClick, onEmptyDateClick }: ScheduleProps) => {
   const [startDate, setStartDate] = useState(new Date(2025, 2, 3));
-  const [events, setEvents] = useState<CalendarEvent[]>(calendarData);
 
   const generateWeekDates = (start: Date) => {
     return Array.from({ length: 7 }, (_, i) => {
-      const date = addDays(start, i);
-      return { date };
+      return { date: addDays(start, i) };
     });
   };
 
@@ -27,20 +26,6 @@ const Schedule = () => {
 
   const changeWeek = (days: number) => {
     setStartDate((prev) => addDays(prev, days));
-  };
-
-  const handleHourClick = (date: Date, hour: number) => {
-    const clickedDate = new Date(date);
-    clickedDate.setHours(hour, 0, 0, 0);
-    const roundedDate = roundToNearestHalfHour(clickedDate);
-
-    const newEvent: CalendarEvent = {
-      dateStart: Math.floor(roundedDate.getTime() / 1000),
-      dateEnd: Math.floor(roundedDate.getTime() / 1000) + 3600,
-      title: `New Event`,
-    };
-
-    setEvents((prev) => [...prev, newEvent]);
   };
 
   return (
@@ -53,7 +38,8 @@ const Schedule = () => {
               key={format(date, "yyyy-MM-dd")}
               date={date}
               events={events}
-              handleHourClick={handleHourClick}
+              onEventClick={onEventClick}
+              onEmptyDateClick={onEmptyDateClick}
             />
           ))}
         </div>
