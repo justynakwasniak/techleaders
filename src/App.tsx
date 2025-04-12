@@ -1,14 +1,10 @@
-// App.tsx
-
 import React from "react";
-import Schedule from "./components/Schedule/Schedule";
-import { useSchedule } from "./utils/useSchedule";
+import Schedule from "./Schedule/Schedule";
+import { useSchedule } from "./hooks/useSchedule";
+import Loader from "./Schedule/components/Loader";
 
 const App: React.FC = () => {
   const { events, loading, error, handleEventClick, handleEmptyDateClick } = useSchedule();
-  const Loader = () => (
-    <div className="loader">Loading...</div>
-  );
 
   if (loading) {
     return <Loader />;
@@ -30,4 +26,3 @@ const App: React.FC = () => {
 };
 
 export default App;
- 

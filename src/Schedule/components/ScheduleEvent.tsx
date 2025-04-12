@@ -1,6 +1,6 @@
 import { formatTime } from "../../utils/formatTime";
 import { calculateEventPosition } from "../../utils/calculateEventPosition";
-import { CalendarEvent } from ".";
+import { CalendarEvent } from "../index";
 type ScheduleEventProps = {
     event: CalendarEvent;
     onEventClick: (event: CalendarEvent) => void;
