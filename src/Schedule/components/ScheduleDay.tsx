@@ -1,5 +1,5 @@
 import { format, fromUnixTime } from "date-fns";
-import { CalendarEvent } from ".";
+import { CalendarEvent } from "../index";
 import ScheduleEvent from "./ScheduleEvent";
 
 type ScheduleDayProps = {

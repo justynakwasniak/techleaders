@@ -1,17 +1,14 @@
 import { useState } from "react";
 import { addDays, format } from "date-fns";
 import { CalendarEvent } from ".";
-import ScheduleHeader from "./ScheduleHeader";
-import ScheduleDay from "./ScheduleDay";
-
+import ScheduleHeader from "./components/ScheduleHeader";
+import ScheduleDay from "./components/ScheduleDay";
 
 type ScheduleProps = {
   events: CalendarEvent[];
   onEventClick: (event: CalendarEvent) => void;
   onEmptyDateClick: (date: Date) => void;
 };
-
-
 
 const Schedule = ({ events, onEventClick, onEmptyDateClick }: ScheduleProps) => {
   const [startDate, setStartDate] = useState(new Date(2025, 2, 3));
