@@ -1,13 +1,29 @@
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { CalendarEvent } from "../components/Schedule";
 
 export const useSchedule = () => {
-  const [events, setEvents] = useState<CalendarEvent[]>([
-    { dateStart: 1740985200, dateEnd: 1740996000, title: "Meeting 1" },
-    { dateStart: 1741082400, dateEnd: 1741086000, title: "Meeting 2" },
-    { dateStart: 1741348800, dateEnd: 1741356000, title: "Meeting 3" },
-    { dateStart: 1741539600, dateEnd: 1741550400, title: "Meeting 4" },
-  ]);
+  const [events, setEvents] = useState<CalendarEvent[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        setTimeout(async () => {
+          const response = await fetch("/events.json");
+          const data = await response.json();
+          setEvents(data); 
+          setLoading(false); 
+        }, 500);
+      } catch (err) {
+        setError("Error fetching events");
+        setLoading(false);
+      }
+    };
+
+    fetchEvents();
+  }, []);
 
   const handleEventClick = (event: CalendarEvent) => {
     alert(`This hour is occupied by:  ${event.title}`);
@@ -23,5 +39,5 @@ export const useSchedule = () => {
     setEvents((prev) => [...prev, newEvent]);
   };
 
-  return { events, handleEventClick, handleEmptyDateClick };
+  return { events, loading, error, handleEventClick, handleEmptyDateClick };
 };
