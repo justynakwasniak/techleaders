@@ -1,6 +1,6 @@
 import { CalendarEvent } from "../Schedule";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-
+// swieża wersja 
 
 const fetchEvents = async (): Promise<CalendarEvent[]> => { // symulacja pobierania danych z API
   const response = await fetch("/events.json"); 
