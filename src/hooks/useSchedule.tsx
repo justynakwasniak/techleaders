@@ -1,55 +1,54 @@
-  import { CalendarEvent } from "../Schedule";
-  import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-  // swieża wersja 
-  
-  const fetchEvents = async (): Promise<CalendarEvent[]> => { // symulacja pobierania danych z API
-    const response = await fetch("/events.json"); 
-    if (!response.ok) { 
-      throw new Error("Failed to fetch events");
-    }
-    return await response.json(); // zwrócenie danych w formacie JSON
+import { CalendarEvent } from "../components/Schedule";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+
+
+ 
+const fetchEvents = async (): Promise<CalendarEvent[]> => {
+  const response = await fetch("/events.json"); 
+  if (!response.ok) { 
+    throw new Error("Failed to fetch events");
+  }
+  return await response.json(); 
+};
+
+export const useSchedule = () => { 
+  const queryClient = useQueryClient(); 
+
+  const { data: events = [], isLoading: loading, error } = useQuery<CalendarEvent[], Error>({ 
+    queryKey: ["events"], 
+    queryFn: fetchEvents, 
+  });
+
+  const { mutate: eventEdit } = useMutation({
+    mutationFn: async (newEvent: CalendarEvent) => {
+      return new Promise<CalendarEvent>((resolve) => { 
+        setTimeout(() => resolve(newEvent), 300); 
+      });
+    },
+    onSuccess: (newEvent) => {
+      queryClient.setQueryData<CalendarEvent[]>(["events"], (old = []) => [...old, newEvent]);
+    },
+  });
+
+  const handleEventClick = (event: CalendarEvent) => {
+    alert(`This hour is occupied by: ${event.title}`);
   };
-  
-  export const useSchedule = () => { // hook do zarządzania kalendarzem
-    const queryClient = useQueryClient(); // hook do zarządzania cachem zapytań
-  
-    const { data: events = [], isLoading: loading, error } = useQuery<CalendarEvent[], Error>({ // hook do pobierania danych
-      queryKey: ["events"], // klucz zapytania
-      queryFn: fetchEvents, // funkcja do pobierania danych
-      staleTime: 1000 * 60 * 5, // czas, przez jaki dane są uważane za świeże
-    });
-  
-    const addEventMutation = useMutation({ // hook do mutacji danych
-      mutationFn: async (newEvent: CalendarEvent) => { // funkcja do dodawania nowego eventu
-        // symulacja zapisu np. do API – tutaj tylko zwracam to samo, ale mozna np. zrobić POST
-        return new Promise<CalendarEvent>((resolve) => { 
-          setTimeout(() => resolve(newEvent), 300); 
-        });
-      },
-      onSuccess: (newEvent) => { // dodanie nowego eventu do cache
-        queryClient.setQueryData<CalendarEvent[]>(["events"], (old = []) => [...old, newEvent]); // aktualizacja cache
-      },
-    });
-  
-    const handleEventClick = (event: CalendarEvent) => { // obsługa kliknięcia w event
-      alert(`This hour is occupied by: ${event.title}`); // wyświetlenie alertu z tytułem eventu
+
+  const handleEmptyDateClick = (date: Date) => { 
+    const newEvent: CalendarEvent = { 
+      dateStart: Math.floor(date.getTime() / 1000),
+      dateEnd: Math.floor(date.getTime() / 1000) + 3600, 
+      title: "New event", 
     };
-  
-    const handleEmptyDateClick = (date: Date) => { // obsługa kliknięcia w pustą datę
-      const newEvent: CalendarEvent = { // nowy event do dodania
-        dateStart: Math.floor(date.getTime() / 1000), // początek eventu 
-        dateEnd: Math.floor(date.getTime() / 1000) + 3600, // koniec eventu
-        title: "New event", 
-      };
-  
-      addEventMutation.mutate(newEvent); // dodanie nowego eventu
-    };
-  
-    return { // zwracane wartości z hooka
-      events,
-      loading,
-      error: error ? error.message : null,
-      handleEventClick,
-      handleEmptyDateClick,
-    };
+
+    eventEdit(newEvent); 
   };
+
+  return { 
+    events,
+    loading,
+    error: error ? error.message : null,
+    handleEventClick,
+    handleEmptyDateClick,
+  };
+};

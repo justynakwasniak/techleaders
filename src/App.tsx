@@ -1,7 +1,7 @@
 import React from "react";
-import Schedule from "./Schedule/Schedule";
+import Schedule from "./components/Schedule/Schedule";
 import { useSchedule } from "./hooks/useSchedule";
-import Loader from "./Schedule/components/Loader";
+import Loader from "./components/Schedule/components/Loader";
 
 const App: React.FC = () => {
   const { events, loading, error, handleEventClick, handleEmptyDateClick } = useSchedule();
