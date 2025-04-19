@@ -1,5 +1,5 @@
-import { formatTime } from "../../utils/formatTime";
-import { calculateEventPosition } from "../../utils/calculateEventPosition";
+import { formatTime } from "../../../utils/formatTime";
+import { calculateEventPosition } from "../../../utils/calculateEventPosition";
 import { CalendarEvent } from "../index";
 type ScheduleEventProps = {
     event: CalendarEvent;
