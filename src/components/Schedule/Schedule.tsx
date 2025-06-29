@@ -3,6 +3,8 @@ import { addDays, format } from "date-fns";
 import { CalendarEvent } from ".";
 import ScheduleHeader from "./components/ScheduleHeader";
 import ScheduleDay from "./components/ScheduleDay";
+import { startOfWeek } from "date-fns";
+
 
 type ScheduleProps = {
   events: CalendarEvent[];
@@ -11,7 +13,9 @@ type ScheduleProps = {
 };
 
 const Schedule = ({ events, onEventClick, onEmptyDateClick }: ScheduleProps) => {
-  const [startDate, setStartDate] = useState(new Date(2025, 2, 3));
+ const [startDate, setStartDate] = useState(() =>
+  startOfWeek(new Date(), { weekStartsOn: 1 })
+);
 
   const generateWeekDates = (start: Date) => {
     return Array.from({ length: 7 }, (_, i) => {

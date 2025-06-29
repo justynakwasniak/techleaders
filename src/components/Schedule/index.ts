@@ -2,6 +2,7 @@ export type CalendarEvent = {
   dateStart: number;
   dateEnd: number;
   title: string;
+   createdBy: string;
 };
 
 export type WeekDate = {

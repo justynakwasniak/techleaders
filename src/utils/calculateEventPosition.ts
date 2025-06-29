@@ -2,6 +2,7 @@ const HOUR_HEIGHT = 48;
 const HEADER_HEIGHT = 40;
 const DAY_START_HOUR = 8;
 
+
 export const calculateEventPosition = (dateStart: number, dateEnd: number) => {
     const eventStartDate = new Date(dateStart * 1000);
     const eventStartHour = eventStartDate.getHours();

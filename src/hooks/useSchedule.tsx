@@ -1,28 +1,30 @@
 import { CalendarEvent } from "../components/Schedule";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
-
- 
-const fetchEvents = async (): Promise<CalendarEvent[]> => {
-  const response = await fetch("/events.json"); 
-  if (!response.ok) { 
-    throw new Error("Failed to fetch events");
-  }
-  return await response.json(); 
+type User = {
+  username: string;
 };
 
-export const useSchedule = () => { 
-  const queryClient = useQueryClient(); 
+const fetchEvents = async (): Promise<CalendarEvent[]> => {
+  const response = await fetch("/events.json");
+  if (!response.ok) {
+    throw new Error("Failed to fetch events");
+  }
+  return await response.json();
+};
 
-  const { data: events = [], isLoading: loading, error } = useQuery<CalendarEvent[], Error>({ 
-    queryKey: ["events"], 
-    queryFn: fetchEvents, 
+export const useSchedule = (user: User | null) => {
+  const queryClient = useQueryClient();
+
+  const { data: events = [], isLoading: loading, error } = useQuery<CalendarEvent[], Error>({
+    queryKey: ["events"],
+    queryFn: fetchEvents,
   });
 
   const { mutate: eventEdit } = useMutation({
     mutationFn: async (newEvent: CalendarEvent) => {
-      return new Promise<CalendarEvent>((resolve) => { 
-        setTimeout(() => resolve(newEvent), 300); 
+      return new Promise<CalendarEvent>((resolve) => {
+        setTimeout(() => resolve(newEvent), 300);
       });
     },
     onSuccess: (newEvent) => {
@@ -31,20 +33,26 @@ export const useSchedule = () => {
   });
 
   const handleEventClick = (event: CalendarEvent) => {
-    alert(`This hour is occupied by: ${event.title}`);
+    alert(`This hour is occupied by: ${event.title}\nCreated by: ${event.createdBy}`);
   };
 
-  const handleEmptyDateClick = (date: Date) => { 
-    const newEvent: CalendarEvent = { 
+  const handleEmptyDateClick = (date: Date) => {
+    if (!user) {
+      alert("You must be logged in to add an event.");
+      return;
+    }
+
+    const newEvent: CalendarEvent = {
       dateStart: Math.floor(date.getTime() / 1000),
-      dateEnd: Math.floor(date.getTime() / 1000) + 3600, 
-      title: "New event", 
+      dateEnd: Math.floor(date.getTime() / 1000) + 3600,
+        createdBy: user.username,
+      title: "New event",
     };
 
-    eventEdit(newEvent); 
+    eventEdit(newEvent);
   };
 
-  return { 
+  return {
     events,
     loading,
     error: error ? error.message : null,

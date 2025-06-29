@@ -17,6 +17,7 @@ type ScheduleEventProps = {
       >
         {event.title} <br />
         {formatTime(event.dateStart)} - {formatTime(event.dateEnd)}
+            <div className="text-[10px] text-blue-200">By: {event.createdBy}</div>
       </div>
     );
   };
