@@ -5,7 +5,7 @@ import Loader from "./components/Schedule/components/Loader";
 import { useAuth } from "./components/context/AuthContext";
 
 const App: React.FC = () => {
-  const { user, login, logout } = useAuth();
+  const { user, login, logout } = useAuth(); // Get user and authentication functions from context
   const { events, loading, error, handleEventClick, handleEmptyDateClick } = useSchedule(user);
 
   if (!user) {
