@@ -3,15 +3,19 @@ import { addDays, format } from "date-fns";
 import { CalendarEvent } from ".";
 import ScheduleHeader from "./components/ScheduleHeader";
 import ScheduleDay from "./components/ScheduleDay";
+import { startOfWeek } from "date-fns";
+
 
 type ScheduleProps = {
-  events: CalendarEvent[];
-  onEventClick: (event: CalendarEvent) => void;
-  onEmptyDateClick: (date: Date) => void;
+  events: CalendarEvent[]; // Array of events to display
+  onEventClick: (event: CalendarEvent) => void; // Callback when an event is clicked
+  onEmptyDateClick: (date: Date) => void; // Callback when an empty date is clicked
 };
 
-const Schedule = ({ events, onEventClick, onEmptyDateClick }: ScheduleProps) => {
-  const [startDate, setStartDate] = useState(new Date(2025, 2, 3));
+const Schedule = ({ events, onEventClick, onEmptyDateClick }: ScheduleProps) => { // State to manage the start date of the week
+ const [startDate, setStartDate] = useState(() => // Initialize startDate to the start of the current week (Monday)
+  startOfWeek(new Date(), { weekStartsOn: 1 }) // 1 means the week starts on Monday
+);
 
   const generateWeekDates = (start: Date) => {
     return Array.from({ length: 7 }, (_, i) => {
